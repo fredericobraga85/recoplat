@@ -1,0 +1,25 @@
+{
+  "name": "recoplat",
+  "version": "1.0.0",
+  "description": "A Recommendation platform of products, services and places between friends",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mongodb": "^3.1.11",
+    "mongoose": "^5.4.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fredericobraga85/recoplat.git"
+  },
+  "author": "Frederico Luz Braga",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fredericobraga85/recoplat/issues"
+  },
+  "homepage": "https://github.com/fredericobraga85/recoplat#readme"
+}
