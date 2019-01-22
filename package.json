@@ -1,15 +1,11 @@
 {
   "name": "recoplat",
   "version": "1.0.0",
-  "description": "A Recommendation platform of products, services and places between friends",
-  "main": "app.js",
-  "dependencies": {
-    "express": "^4.16.4",
-    "mongodb": "^3.1.11",
-    "mongoose": "^5.4.4"
-  },
-  "devDependencies": {},
+  "description": "Recommendation platform between friends",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,5 +17,18 @@
   "bugs": {
     "url": "https://github.com/fredericobraga85/recoplat/issues"
   },
-  "homepage": "https://github.com/fredericobraga85/recoplat#readme"
+  "homepage": "https://github.com/fredericobraga85/recoplat#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.4.5",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
 }
