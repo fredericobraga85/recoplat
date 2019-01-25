@@ -18,7 +18,7 @@ mongoose
   .then(() => {
     console.log("MongoDB connected.");
   })
-  .catch(err => console.log(err));
+  .catch(err => console.log("MongoDB error: " + err));
 
 app.use(passport.initialize());
 
