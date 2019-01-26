@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const validProfileInput = require("../../validation/profile");
 
 //Load Profile
 const Profile = require("../../models/Profile");
@@ -24,6 +25,7 @@ router.get(
     const errors = {};
 
     Profile.findOne({ user: req.user.id })
+      .populate("user", ["name", "avatar"])
       .then(profile => {
         if (!profile) {
           errors.profile = "There is no profile for this user.";
@@ -43,8 +45,15 @@ router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    ///Validate Profile
+    const { errors, isValid } = validProfileInput(req.body);
+
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
     const profileFields = {};
-    profileFields.user = req.body.user.id;
+    profileFields.user = req.user.id;
     if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.company) profileFields.company = req.body.company;
     if (req.body.website) profileFields.website = req.body.website;
@@ -60,15 +69,13 @@ router.post(
 
     //Social
     profileFields.social = {};
-    if (req.body.youtube) profileFields.youtube = req.body.youtube;
-    if (req.body.twitter) profileFields.twitter = req.body.twitter;
-    if (req.body.facebook) profileFields.facebook = req.body.facebook;
-    if (req.body.linkedin) profileFields.linkedin = req.body.linkedin;
-    if (req.body.instagram) profileFields.instagram = req.body.instagram;
+    if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
+    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
+    if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
+    if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
+    if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
-    const errors = {};
-
-    Profile.findOne({ user: req.body.user.id }).then(profile => {
+    Profile.findOne({ user: req.user.id }).then(profile => {
       if (profile) {
         //Updated
         Profile.findOneAndUpdate(
