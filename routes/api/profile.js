@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const validProfileInput = require("../../validation/profile");
+const validExperienceInput = require("../../validation/experience");
+const validEducationInput = require("../../validation/education");
 
 //Load Profile
 const Profile = require("../../models/Profile");
@@ -159,6 +161,104 @@ router.post(
         });
       }
     });
+  }
+);
+
+//@route Post /api/profile/experience
+//@desc create experience
+//@access Private
+router.post(
+  "/experience",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    ///Validate Experience
+    const { errors, isValid } = validExperienceInput(req.body);
+
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    const newExp = {
+      title: req.body.title,
+      company: req.body.company,
+      location: req.body.location,
+      from: req.body.from,
+      to: req.body.to,
+      current: req.body.current,
+      description: req.body.description
+    };
+
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        if (!profile) {
+          errors.profile = "There is no profile for this user.";
+          return res.status(404).json(errors);
+        }
+
+        profile.experience.unshift(newExp);
+
+        //Save experience
+        profile
+          .save()
+          .then(profile => {
+            res.json(profile);
+          })
+          .catch(err => {
+            res.status(400).json({ profile: "Could not add experience" });
+          });
+      })
+      .catch(err =>
+        res.status(400).json({ profile: "Could not add experience" })
+      );
+  }
+);
+
+//@route Post /api/profile/education
+//@desc create education
+//@access Private
+router.post(
+  "/education",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    ///Validate Education
+    const { errors, isValid } = validEducationInput(req.body);
+
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    const newEducation = {
+      school: req.body.school,
+      degree: req.body.degree,
+      fieldofstudy: req.body.fieldofstudy,
+      from: req.body.from,
+      to: req.body.to,
+      current: req.body.current,
+      description: req.body.description
+    };
+
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        if (!profile) {
+          errors.profile = "There is no profile for this user.";
+          return res.status(404).json(errors);
+        }
+
+        profile.education.unshift(newEducation);
+
+        //Save education
+        profile
+          .save()
+          .then(profile => {
+            res.json(profile);
+          })
+          .catch(err => {
+            res.status(400).json({ profile: "Could not add education" });
+          });
+      })
+      .catch(err =>
+        res.status(400).json({ profile: "Could not add education" })
+      );
   }
 );
 
