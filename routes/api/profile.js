@@ -262,4 +262,115 @@ router.post(
   }
 );
 
+//@route Delete /api/profile/experience
+//@desc delete experience
+//@access Private
+router.delete(
+  "/experience/:exp_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        if (!profile) {
+          errors.profile = "There is no profile for this user.";
+          return res.status(404).json(errors);
+        }
+
+        //get experience index
+        const removeIndex = profile.experience
+          .map(item => item.id)
+          .indexOf(req.params.exp_id);
+
+        //return for unexistent experience
+        if (removeIndex < 0) {
+          return res
+            .status(404)
+            .json({ profile: "Could not remove experience" });
+        }
+
+        //Splice out of array
+        profile.experience.splice(removeIndex, 1);
+
+        //Save experience
+        profile
+          .save()
+          .then(profile => {
+            res.json(profile);
+          })
+          .catch(err => {
+            res.status(400).json({ profile: "Could not remove experience" });
+          });
+      })
+      .catch(err =>
+        res.status(400).json({ profile: "Could not remove education" })
+      );
+  }
+);
+
+//@route Delete /api/profile/education
+//@desc delete education
+//@access Private
+router.delete(
+  "/education/:edu_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        if (!profile) {
+          errors.profile = "There is no profile for this user.";
+          return res.status(404).json(errors);
+        }
+
+        //get education index
+        const removeIndex = profile.education
+          .map(item => item.id)
+          .indexOf(req.params.edu_id);
+
+        //return for unexistent education
+        if (removeIndex < 0) {
+          return res
+            .status(404)
+            .json({ profile: "Could not remove education" });
+        }
+
+        //Splice out of array
+        profile.experience.splice(removeIndex, 1);
+
+        //Save education
+        profile
+          .save()
+          .then(profile => {
+            res.json(profile);
+          })
+          .catch(err => {
+            res.status(400).json({ profile: "Could not remove education" });
+          });
+      })
+      .catch(err =>
+        res.status(400).json({ profile: "Could not remove education" })
+      );
+  }
+);
+
+//@route Delete /api/profile
+//@desc Delete user and profile
+//@access Private
+router.delete(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOneAndRemove({ user: req.user.id })
+      .then(() => {
+        User.findOneAndRemove({ _id: req.user.id })
+          .then(() => res.json({ success: true }))
+          .catch(err =>
+            res.status(400).json({ profile: "Could not remove user" })
+          );
+      })
+      .catch(err =>
+        res.status(400).json({ profile: "Could not remove profile" })
+      );
+  }
+);
+
 module.exports = router;
