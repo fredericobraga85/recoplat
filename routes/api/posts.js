@@ -41,14 +41,13 @@ router.delete(
   (req, res) => {
     Post.findOne({ _id: req.params.id, user: req.user.id })
       .then(post => {
-        console.log(post);
         post.remove().then(() => res.json({ success: true }));
       })
       .catch(err => res.status(400).json({ post: "Could not delete post" }));
   }
 );
 
-//@route Post /api/posts/\
+//@route Post /api/posts/
 //@desc Create a Post
 //@access Private
 router.post(
@@ -78,6 +77,64 @@ router.post(
         errors.post = "Could not create post";
         res.status(400).json(errors);
       });
+  }
+);
+
+//@route Post /api/posts/like
+//@desc Like a post
+//@access Private
+router.post(
+  "/like/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findById(req.params.id)
+      .then(post => {
+        if (
+          post.likes.filter(like => like.user.toString() === req.user.id)
+            .length > 0
+        ) {
+          return res.status(400).json({ post: "Post already liked by user" });
+        }
+
+        post.likes.unshift({ user: req.user.id });
+        post
+          .save()
+          .then(post => res.json(post))
+          .catch(err => res.status(400).json({ post: "Could not like post." }));
+      })
+      .catch(err => res.status(400).json({ post: "Could not like post" }));
+  }
+);
+
+//@route Post /api/posts/unlike
+//@desc Unlike a post
+//@access Private
+router.post(
+  "/unlike/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findById(req.params.id)
+      .then(post => {
+        if (
+          post.likes.filter(like => like.user.toString() === req.user.id)
+            .length === 0
+        ) {
+          return res.status(400).json({ post: "Post is not liked by user" });
+        }
+
+        const removeIndex = post.likes
+          .map(item => item.user.toString())
+          .indexOf(req.user.id);
+
+        post.likes.splice(removeIndex, 1);
+        post
+          .save()
+          .then(post => res.json(post))
+          .catch(err =>
+            res.status(400).json({ post: "Could not unlike post." })
+          );
+      })
+      .catch(err => res.status(400).json({ post: "Could not unlike post" }));
   }
 );
 
