@@ -28,8 +28,11 @@ module.exports = function validateRegisterInput(data) {
     errors.password = "Password is required.";
   } else if (!Validator.isLength(data.password, { min: 6 })) {
     errors.password = "Password must have at least 6 characters.";
-  } else if (!Validator.equals(data.password, data.password2)) {
-    errors.password = "Passwords must match.";
+  }
+
+  //Password2
+  if (!Validator.equals(data.password, data.password2)) {
+    errors.password2 = "Passwords must match.";
   }
 
   return { errors, isValid: isEmpty(errors) };
